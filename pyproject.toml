@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "type-based-creator"
+version = "0.1.0"
+description = ""
+authors = ["Ghennadi Colievschii <meatraven@gmail.com>"]
+readme = "README.md"
+packages = [{include = "type_based_creator", from = "apps"}]
+
+[tool.poetry.dependencies]
+python = "^3.10.11"
+django = "^4.2.2"
+djangorestframework = "^3.14.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
