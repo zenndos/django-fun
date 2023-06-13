@@ -27,13 +27,15 @@ class TableView(rest_framework.generics.RetrieveAPIView):
         id_value = kwargs["id"]
 
         query_dict = _build_get_query_dict(id_value)
-        generated_model = models.dynamic_model_generator(query_dict, id_value)
+        generated_model = models.dynamic_model_generator(
+            query_dict, id_value, to_insert=False
+        )
         django.apps.apps.register_model("type_based_creator", generated_model)
 
-        cols = models.query_columns(generated_model)
-        cols.pop("related_id_id")
+        table_columns = models.query_columns(generated_model)
+        table_columns.pop("id")
 
-        return rest_framework.response.Response(cols, status=200)
+        return rest_framework.response.Response(table_columns, status=200)
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -42,7 +44,7 @@ class TableView(rest_framework.generics.RetrieveAPIView):
             id_instance = models.ID.objects.create()
 
             generated_model = models.dynamic_model_generator(
-                serializer.validated_data, id_instance.pk
+                serializer.validated_data, id_instance.pk, to_insert=True
             )
 
             # Save the model to the database
@@ -87,9 +89,13 @@ class RowView(rest_framework.generics.RetrieveAPIView):
         generated_model = models.dynamic_model_generator(query_dict, id_value)
         django.apps.apps.register_model("type_based_creator", generated_model)
 
-        generated_fields = [field.name for field in generated_model._meta.get_fields()]
+        instances = generated_model.objects.all()
+        response_data = []
+        for instance in instances:
+            serializer = serializers.DynamicModelSerializer(instance)
+            response_data.append(serializer.data)
 
-        return rest_framework.response.Response(generated_fields, status=200)
+        return rest_framework.response.Response(response_data, status=200)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -97,19 +103,12 @@ class RowView(rest_framework.generics.RetrieveAPIView):
         if serializer.is_valid():
             id_value = kwargs["id"]
 
-            id_instance = models.ID.objects.get(id=id_value)
-
             query_dict = _build_get_query_dict(id_value)
             generated_model = models.dynamic_model_generator(query_dict, id_value)
 
             django.apps.apps.register_model("type_based_creator", generated_model)
 
-            table_instance = generated_model(
-                related_id_id=id_instance.id, **request.data
-            )
-            # table_instance = generated_model.objects.create(
-            #    id=id_instance, **request.data
-            # )
+            table_instance = generated_model(**request.data)
             table_instance.save()
 
             return rest_framework.response.Response(

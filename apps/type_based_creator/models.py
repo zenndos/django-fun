@@ -25,7 +25,7 @@ class ID(django.db.models.Model):
 
 
 def dynamic_model_generator(
-    data: dict[str, int | float | bool | str], id: int
+    data: dict[str, int | float | bool | str], id: int, to_insert: bool = False
 ) -> django.db.models.Model:
     """
     Dynamic model generator.
@@ -45,6 +45,11 @@ def dynamic_model_generator(
         ),
         "__module__": "type_based_creator.models",
     }
+
+    if to_insert:
+        attrs["related_id"] = (
+            django.db.models.ForeignKey(ID, on_delete=django.db.models.CASCADE),
+        )
 
     for title, value in data.items():
         attrs[title] = TYPE_TO_FIELD_MAP[type(value)]()
@@ -95,31 +100,17 @@ def update_dynamic_model(
     # table_instance.save()
 
 
-def get_dynamic_model_instance(id_value):
-    dynamic_model = get_dynamic_model(id_value)
-
-    try:
-        table_instance = dynamic_model.objects.get(id=id_value)
-        return table_instance
-
-    except dynamic_model.DoesNotExist:
-        raise errors.NotFound
-
-
 def get_dynamic_model(id_value):
     model_name = f"Table{id_value}"
 
-    try:
-        # django.apps.apps.clear_cache()
-        DynamicModel = django.apps.apps.get_model("type_based_creator", model_name)
-    except LookupError:
-        raise errors.NotFound
+    DynamicModel = django.apps.apps.get_model("type_based_creator", model_name)
 
     return DynamicModel
 
 
 def query_columns(model):
     table_name = model._meta.db_table
+
     with django.db.connection.cursor() as cursor:
         cursor.execute(
             f"""
@@ -128,5 +119,7 @@ def query_columns(model):
             WHERE table_name = '{table_name}';
         """
         )
+
         column_types = {row[0]: row[1] for row in cursor.fetchall()}
+
     return column_types

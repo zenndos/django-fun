@@ -56,8 +56,18 @@ class TitleToTypeSerializer(rest_framework.serializers.Serializer):
         for k, v in data.items():
             if k == "id":
                 raise errors.BadRequest
+
             if v not in {"number", "string", "boolean"}:
                 raise errors.BadRequest
+
+            # some stupid magic because it's 1am and I'm tired
+            elif v == "number":
+                data[
+                    k
+                ] = 1  # can't cast boolean to double precision so keeping it as int
+
+            elif v == "boolean":
+                data[k] = True
 
         return data
 
