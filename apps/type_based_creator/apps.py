@@ -20,4 +20,9 @@ class MyAppConfig(django.apps.AppConfig):
                 schema_editor.create_model(models.ID)
                 logger.info("ID table created")
         else:
-            logger.warning("ID table already exists")
+            logger.info("ID table already exists")
+
+        from django.core.management import call_command
+
+        call_command("makemigrations")
+        call_command("migrate")

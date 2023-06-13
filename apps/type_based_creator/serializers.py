@@ -20,8 +20,6 @@ class AnyFieldSerializer(rest_framework.serializers.Serializer):
         """
         Validate the data.
         """
-        logger.warning(f"data is: {data}")
-
         for k, v in data.items():
             if k == "id":
                 raise errors.BadRequest
@@ -35,3 +33,47 @@ class AnyFieldSerializer(rest_framework.serializers.Serializer):
         Convert the instance to its representation.
         """
         return instance
+
+
+class TitleToTypeSerializer(rest_framework.serializers.Serializer):
+    """
+    Title to type Serializer.
+
+    Serializer which expect JSON data in the format:
+    {
+        "title": "type"
+    }
+
+    Allowed types are: number, string, boolean.
+    """
+
+    def to_internal_value(
+        self, data: dict[typing.Any, typing.Any]
+    ) -> dict[str, int | float | bool | str]:
+        """
+        Validate the data.
+        """
+        for k, v in data.items():
+            if k == "id":
+                raise errors.BadRequest
+            if v not in {"number", "string", "boolean"}:
+                raise errors.BadRequest
+
+        return data
+
+    def to_representation(self, instance):
+        """
+        Convert the instance to its representation.
+        """
+        return instance
+
+
+class DynamicModelSerializer(rest_framework.serializers.Serializer):
+    def to_representation(self, instance):
+        model_dict = {}
+
+        for attr, value in instance.__dict__.items():
+            if not attr.startswith("_") and attr != "id_id":
+                model_dict[attr] = str(value)
+
+        return model_dict

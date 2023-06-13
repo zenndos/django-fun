@@ -9,7 +9,7 @@ class Error(Exception, abc.ABC):
     """
     Error.
 
-    Base class for exceptions raised by the applicatin.
+    Base class for exceptions raised by the application.
     """
 
     @property
@@ -47,3 +47,25 @@ class BadRequest(Error):
         Message corresponding to the exception.
         """
         return "bad request"
+
+
+class NotFound(Error):
+    """
+    NotFound Error.
+
+    Error indicating the error in implementation of the service.
+    """
+
+    @property
+    def status_code(self):
+        """
+        HTTP error code corresponding to the exception.
+        """
+        return 404
+
+    @property
+    def message(self):
+        """
+        Message corresponding to the exception.
+        """
+        return "not found"

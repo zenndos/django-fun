@@ -5,4 +5,4 @@ setup:
 	poetry install
 
 server:
-	poetry run python manage.py runserver 0.0.0.0:8000
+	set -a; source .env set +a; poetry run python manage.py runserver 0.0.0.0:8000
