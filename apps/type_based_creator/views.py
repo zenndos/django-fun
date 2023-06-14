@@ -1,8 +1,8 @@
 """
 Views module.
 """
-import typing
 import logging
+import typing
 
 import django
 import rest_framework.generics

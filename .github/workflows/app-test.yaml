@@ -1,0 +1,36 @@
+name: app test
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+
+      - name: set python version
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10.11"
+
+      - name: install poetry
+        run: curl -sSL https://install.python-poetry.org | python - --version "1.4.2"
+
+      - name: update path
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: install app and dependencies
+        run: poetry install
+
+      - name: run static code analysis
+        run: make analyze
+
+      - name: run tests
+        run: make test
