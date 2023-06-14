@@ -3,7 +3,6 @@ Test base module.
 """
 
 import django
-
 import rest_framework.test
 
 

@@ -1,0 +1,19 @@
+name: tests [type-based-creator]
+
+on:
+  push:
+    paths:
+      - "apps/type_based_creator/**"
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "apps/type_based_creator/**"
+    branches:
+      - "**"
+
+jobs:
+  tests:
+    uses: ./.github/workflows/app-test.yaml
+    with:
+      app: type-based-creator
