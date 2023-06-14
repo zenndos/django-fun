@@ -95,7 +95,7 @@ class RowResponseSerializer(rest_framework.serializers.Serializer):
         model_dict = {}
 
         for attr, value in instance.__dict__.items():
-            if not attr.startswith("_") and attr != "id_id":
+            if not attr.startswith("_") and attr != "id":
                 model_dict[attr] = str(value)
 
         return model_dict

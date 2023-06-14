@@ -40,7 +40,6 @@ class TableView(rest_framework.generics.RetrieveAPIView):
         generated_model = models.dynamic_model_generator(
             model_fields, id_value, to_insert=False
         )
-        django.apps.apps.register_model("type_based_creator", generated_model)
 
         table_columns = models.query_columns(generated_model)
         table_columns.pop("id")
@@ -73,11 +72,9 @@ class TableView(rest_framework.generics.RetrieveAPIView):
                 schema_editor.create_model(generated_model)
             id_instance.save()
 
-            django.apps.apps.register_model("type_based_creator", generated_model)
-
             return rest_framework.response.Response(
                 {"message": f"Created new dynamic model with ID {id_instance.pk}."},
-                status=200,
+                status=201,
             )
 
         raise errors.BadRequest
@@ -119,7 +116,6 @@ class TableView(rest_framework.generics.RetrieveAPIView):
 
         :return: serializer class.
         """
-
         if "cool-table" in self.request.path:
             return serializers.AnyFieldSerializer
 
@@ -132,28 +128,6 @@ class RowView(rest_framework.generics.RetrieveAPIView):
 
     API view for the row of the dynamic table.
     """
-
-    def get(self, request, *args, **kwargs) -> rest_framework.response.Response:
-        """
-        GET method handler.
-
-        :param: request - request object.
-
-        :return: response object.
-        """
-        id_value = kwargs["id"]
-
-        model_fields = build_model_fields(id_value)
-        generated_model = models.dynamic_model_generator(model_fields, id_value)
-        django.apps.apps.register_model("type_based_creator", generated_model)
-
-        instances = generated_model.objects.all()
-        response_data = []
-        for instance in instances:
-            serializer = serializers.RowResponseSerializer(instance)
-            response_data.append(serializer.data)
-
-        return rest_framework.response.Response(response_data, status=200)
 
     def post(self, request, **kwargs) -> rest_framework.response.Response:
         """
@@ -173,14 +147,12 @@ class RowView(rest_framework.generics.RetrieveAPIView):
             model_fields = build_model_fields(id_value)
             generated_model = models.dynamic_model_generator(model_fields, id_value)
 
-            django.apps.apps.register_model("type_based_creator", generated_model)
-
             table_instance = generated_model(**request.data)
             table_instance.save()
 
             return rest_framework.response.Response(
                 {"message": f"Created new dynamic model with ID {table_instance}."},
-                status=200,
+                status=201,
             )
 
         raise errors.BadRequest
@@ -192,6 +164,35 @@ class RowView(rest_framework.generics.RetrieveAPIView):
         :return: serializer class.
         """
         return serializers.AnyFieldSerializer
+
+
+class RowsView(rest_framework.generics.RetrieveAPIView):
+    """
+    Rows view.
+
+    API view for the quering rows of the dynamic table.
+    """
+
+    def get(self, request, *args, **kwargs) -> rest_framework.response.Response:
+        """
+        GET method handler.
+
+        :param: request - request object.
+
+        :return: response object.
+        """
+        id_value = kwargs["id"]
+
+        model_fields = build_model_fields(id_value)
+        generated_model = models.dynamic_model_generator(model_fields, id_value)
+
+        instances = generated_model.objects.all()
+        response_data = []
+        for instance in instances:
+            serializer = serializers.RowResponseSerializer(instance)
+            response_data.append(serializer.data)
+
+        return rest_framework.response.Response(response_data, status=200)
 
 
 def build_model_fields(id_value: str) -> dict[str, typing.Any]:

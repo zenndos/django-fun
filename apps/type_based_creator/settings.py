@@ -29,7 +29,7 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    "EXCEPTION_HANDLER": "type_based_creator.error_handler.error_handler",
+    "EXCEPTION_HANDLER": "type_based_creator.handler.error_handler",
 }
 
 ROOT_URLCONF = "type_based_creator.urls"
