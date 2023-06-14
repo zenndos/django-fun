@@ -105,7 +105,7 @@ Example body:
 
 ```bash
 curl --request POST \
-  --url http://localhost:8000/cool-table \
+  --url http://localhost:8005/cool-table \
   --header 'Content-Type: application/json' \
   --data '{
   "field_1": true
