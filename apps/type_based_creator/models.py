@@ -87,6 +87,7 @@ def update_dynamic_model(
         new_field.name = title
 
         if not hasattr(dynamic_model, title):
+            new_field.column = f"{title}"
             dynamic_model.add_to_class(title, type(new_field))
 
             with django.db.connection.schema_editor() as schema_editor:

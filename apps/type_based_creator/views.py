@@ -2,7 +2,11 @@
 Views module.
 """
 import typing
+<<<<<<< Updated upstream
 import logging
+=======
+import json
+>>>>>>> Stashed changes
 
 import django
 import rest_framework.generics
@@ -147,8 +151,11 @@ class RowView(rest_framework.generics.RetrieveAPIView):
             model_fields = build_model_fields(id_value)
             generated_model = models.dynamic_model_generator(model_fields, id_value)
 
-            table_instance = generated_model(**request.data)
-            table_instance.save()
+            try:
+                table_instance = generated_model(**request.data)
+                table_instance.save()
+            except (ValueError, django.db.utils.IntegrityError):
+                raise errors.BadRequest
 
             return rest_framework.response.Response(
                 {"message": f"Created new dynamic model with ID {table_instance}."},
