@@ -2,7 +2,9 @@
 
 A django application which creates dynamic tables/models.
 
-One particular cool feature of this application is that it preserves the ability to access the models even after application restart. I've spent several hours figuring out this feature alone. Django normally loads it's models to the registry from the source code, so upon restart the information about dynamic models is usally lost. I use a small dirty trick to bypass that limitation - I regenrate the models on the fly by quering the fields/columns. This allows me to preserve the models even if the application is restarted.
+One particular cool feature of this application is that besided the model ID there is no other model/table defined in the source code. Things are trully dynamic :)
+
+Another cool feature of this application is that it preserves the ability to access the models even after application restart. I've spent several hours figuring out this feature alone. Django normally loads it's models to the registry from the source code, so upon restart the information about dynamic models is usally lost. I use a small dirty trick to bypass that limitation - I regenrate the models on the fly by quering the fields/columns. This allows me to preserve the models even if the application is restarted.
 
 # How to run things
 
