@@ -12,7 +12,7 @@ analyze:
 	poetry run pylint apps
 
 test:
-	poetry run python manage.py test type_based_creator
+	set -a; source .env set +a; poetry run python manage.py test type_based_creator
 
 run_postgres:
 	docker run --name test_postgres -e POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) -e POSTGRES_DB=$(POSTGRES_DB) -p $(POSTGRES_PORT):5432 -d postgres:latest
