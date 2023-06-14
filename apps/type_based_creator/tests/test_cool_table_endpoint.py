@@ -68,12 +68,14 @@ class CoolTableEndpointTests(test_base.TestBase):
             "b_field": "ewrwe",
             "c_field": True,
             "d_field": "some_text",
+            "new_ef_field": 17,
         }
         expected_response = {
             "a_field": "integer",
             "b_field": "text",
             "c_field": "boolean",
             "d_field": "text",
+            "new_ef_field": "integer",
         }
 
         response = self.client.put("/cool-table/1", update_data, format="json")

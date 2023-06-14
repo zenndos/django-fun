@@ -147,8 +147,11 @@ class RowView(rest_framework.generics.RetrieveAPIView):
             model_fields = build_model_fields(id_value)
             generated_model = models.dynamic_model_generator(model_fields, id_value)
 
-            table_instance = generated_model(**request.data)
-            table_instance.save()
+            try:
+                table_instance = generated_model(**request.data)
+                table_instance.save()
+            except (ValueError, django.db.utils.IntegrityError) as exc:
+                raise errors.BadRequest from exc
 
             return rest_framework.response.Response(
                 {"message": f"Created new dynamic model with ID {table_instance}."},

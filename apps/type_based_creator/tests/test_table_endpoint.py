@@ -65,12 +65,14 @@ class TableEndpointTests(test_base.TestBase):
             "b_field": "string",
             "c_field": "boolean",
             "d_field": "string",
+            "new_ef_field": "number",
         }
         expected_response = {
             "a_field": "integer",
             "b_field": "text",
             "c_field": "boolean",
             "d_field": "text",
+            "new_ef_field": "integer",
         }
 
         response = self.client.put("/table/1", update_data, format="json")

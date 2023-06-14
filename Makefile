@@ -4,6 +4,7 @@ setup:
 	poetry lock --no-update
 	poetry install
 
+
 run_postgres:
 	@if ! docker ps --format '{{.Names}}' | grep -q '^test_postgres$$'; then \
 		docker run --name test_postgres \
