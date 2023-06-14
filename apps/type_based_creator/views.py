@@ -1,12 +1,8 @@
 """
 Views module.
 """
-import typing
-<<<<<<< Updated upstream
 import logging
-=======
-import json
->>>>>>> Stashed changes
+import typing
 
 import django
 import rest_framework.generics
