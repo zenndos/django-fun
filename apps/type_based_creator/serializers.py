@@ -1,10 +1,16 @@
+"""
+Serializers module.
+"""
 import logging
 import typing
+
 import rest_framework.serializers
 
 from . import errors
 
 logger = logging.getLogger(__name__)
+
+# pylint: disable=abstract-method
 
 
 class AnyFieldSerializer(rest_framework.serializers.Serializer):
@@ -20,15 +26,15 @@ class AnyFieldSerializer(rest_framework.serializers.Serializer):
         """
         Validate the data.
         """
-        for k, v in data.items():
-            if k == "id":
+        for key, value in data.items():
+            if key == "id":
                 raise errors.BadRequest
-            if not isinstance(v, (int, float, str, bool)):
+            if not isinstance(value, (int, float, str, bool)):
                 raise errors.BadRequest
 
         return data
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: typing.Any) -> typing.Any:
         """
         Convert the instance to its representation.
         """
@@ -53,33 +59,39 @@ class TitleToTypeSerializer(rest_framework.serializers.Serializer):
         """
         Validate the data.
         """
-        for k, v in data.items():
-            if k == "id":
+        for key, value in data.items():
+            if key == "id":
                 raise errors.BadRequest
 
-            if v not in {"number", "string", "boolean"}:
+            if value not in {"number", "string", "boolean"}:
                 raise errors.BadRequest
 
             # some stupid magic because it's 1am and I'm tired
-            elif v == "number":
+            if value == "number":
                 data[
-                    k
+                    key
                 ] = 1  # can't cast boolean to double precision so keeping it as int
 
-            elif v == "boolean":
-                data[k] = True
+            elif value == "boolean":
+                data[key] = True
 
         return data
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: typing.Any) -> typing.Any:
         """
         Convert the instance to its representation.
         """
         return instance
 
 
-class DynamicModelSerializer(rest_framework.serializers.Serializer):
-    def to_representation(self, instance):
+class RowResponseSerializer(rest_framework.serializers.Serializer):
+    """
+    Row response serializer.
+
+    Serializer for reponse to the dynamic models row GET request.
+    """
+
+    def to_representation(self, instance: typing.Any) -> dict[str, typing.Any]:
         model_dict = {}
 
         for attr, value in instance.__dict__.items():

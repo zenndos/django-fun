@@ -1,8 +1,9 @@
 """
 Django settings for type_based_creator project.
 """
-import environ
 from pathlib import Path
+
+import environ
 
 env = environ.Env()
 
@@ -16,7 +17,7 @@ SECRET_KEY = "django-insecure-x@2eq$ii&yrkfdpwsk81okt!0fq0joe21i2svhjyy)v$3^*og@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list[str] = []
 
 
 # Application definition
@@ -24,7 +25,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "type_based_creator.apps.MyAppConfig",
+    "type_based_creator.apps.AppConfig",
 ]
 
 REST_FRAMEWORK = {
@@ -49,11 +50,6 @@ DATABASES = {
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
     "root": {
         "handlers": ["console"],
         "level": "INFO",

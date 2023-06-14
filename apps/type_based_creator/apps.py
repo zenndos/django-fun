@@ -1,15 +1,30 @@
-import django
-import logging
+"""
+Django apps module.
+"""
 
 import logging
+
+import django
 
 logger = logging.getLogger(__name__)
 
 
-class MyAppConfig(django.apps.AppConfig):
+class AppConfig(django.apps.AppConfig):
+    """
+    Application config.
+    """
+
     name = "type_based_creator"
 
     def ready(self):
+        """
+        Application ready signal.
+
+        Code to be executed when the application is ready.
+        """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=protected-access
+        # pylint: disable=no-member
         from . import models
 
         if (
@@ -21,8 +36,3 @@ class MyAppConfig(django.apps.AppConfig):
                 logger.info("ID table created")
         else:
             logger.info("ID table already exists")
-
-        from django.core.management import call_command
-
-        call_command("makemigrations")
-        call_command("migrate")

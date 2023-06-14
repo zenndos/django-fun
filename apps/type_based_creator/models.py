@@ -1,7 +1,10 @@
-import django
+"""
+Models module.
+"""
+
 import logging
 
-from . import errors
+import django
 
 logger = logging.getLogger(__name__)
 
@@ -17,15 +20,21 @@ class ID(django.db.models.Model):
     """
     ID model.
 
-    This model is used to generate the primary key for the dynamic models.
+    This model is used to generate the foreign key for the dynamic models.
     """
 
+    # pylint: disable=too-few-public-methods
+
     class Meta:
+        """
+        Meta class.
+        """
+
         app_label = "type_based_creator"
 
 
 def dynamic_model_generator(
-    data: dict[str, int | float | bool | str], id: int, to_insert: bool = False
+    data: dict[str, int | float | bool | str], id_value: str, to_insert: bool = False
 ) -> django.db.models.Model:
     """
     Dynamic model generator.
@@ -34,6 +43,7 @@ def dynamic_model_generator(
 
     :param: data - data to be used to generate the model.
     :param: id - id of the model.
+    :param: to_insert - weather the model is to be inserted by schema editor.
     """
     attrs = {
         "Meta": type(
@@ -56,14 +66,22 @@ def dynamic_model_generator(
 
     attrs["id"] = django.db.models.AutoField(primary_key=True)
 
-    return type(f"Table{id}", (django.db.models.Model,), attrs)
+    return type(f"Table{id_value}", (django.db.models.Model,), attrs)
 
 
 def update_dynamic_model(
     data: dict[str, int | float | bool | str],
     dynamic_model: django.db.models.Model,
-    id_value: str,
 ) -> None:
+    """
+    Update dynamic model.
+
+    Updated a model based on the data provided.
+
+    :param: data - data to be update the new model with.
+    :param: dynamic_model - dynamic model to be updated.
+    """
+    # pylint: disable=protected-access
     for title, value in data.items():
         new_field = TYPE_TO_FIELD_MAP[type(value)]()
         new_field.name = title
@@ -83,10 +101,6 @@ def update_dynamic_model(
                 new_field.model = dynamic_model
                 new_field.attname, new_field.column = current_field.get_attname_column()
 
-                logger.info(
-                    f"current_field: {type(current_field)}, new_field: {type(new_field)}"
-                )
-
                 with django.db.connection.schema_editor() as schema_editor:
                     schema_editor.alter_field(
                         dynamic_model,
@@ -94,21 +108,16 @@ def update_dynamic_model(
                         new_field,
                     )
 
-        # table_instance = get_dynamic_model_instance(id_value)
-        # setattr(table_instance, title, value)
 
-    # table_instance.save()
+def query_columns(model: django.db.models.Model) -> dict[str, str]:
+    """
+    Query columns.
 
+    Query columns of django model from database table.
 
-def get_dynamic_model(id_value):
-    model_name = f"Table{id_value}"
-
-    DynamicModel = django.apps.apps.get_model("type_based_creator", model_name)
-
-    return DynamicModel
-
-
-def query_columns(model):
+    :param: model - model to use for query.
+    """
+    # pylint: disable=protected-access
     table_name = model._meta.db_table
 
     with django.db.connection.cursor() as cursor:

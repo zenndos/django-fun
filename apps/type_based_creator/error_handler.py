@@ -1,17 +1,24 @@
+"""
+Error handler module.
+"""
 import logging
+import typing
 
-import rest_framework.views
 import rest_framework.response
+import rest_framework.views
 
 from . import errors
 
 logger = logging.getLogger(__name__)
 
 
-def error_handler(error, context):
+def error_handler(error: Exception, context: typing.Any):
+    """
+    Error handler.
+    """
     response = rest_framework.views.exception_handler(error, context)
 
-    logger.exception(f"error while handling request: {error}")
+    logger.exception("error while handling request: %s", error)
 
     if response is not None:
         ...
