@@ -10,7 +10,7 @@ run_postgres:
 			-e POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) \
 			-e POSTGRES_DB=$(POSTGRES_DB) \
 			-p $(POSTGRES_PORT):5432 -d postgres:latest; \
-		echo "Waiting for PostgreSQL container to start..." && sleep 1; \
+		echo "Waiting for PostgreSQL container to start..." && sleep 7; \
 	else \
 		echo "PostgreSQL container is already running"; \
 	fi
